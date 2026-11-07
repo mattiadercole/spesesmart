@@ -6,7 +6,7 @@ App web progressiva (PWA) moderna, fluida e sicura per il tracciamento delle spe
 
 ## 🌟 Caratteristiche Principali
 
-- **🔒 Zero Database Nostro / 100% Privacy:** Tutti i dati dell'utente vengono salvati solo ed esclusivamente in un foglio Google Sheet (`SpeseSmart_Data.sheets`) creato nel suo Google Drive personale.
+- **🔒 Zero Database / 100% Privacy:** Tutti i dati dell'utente vengono salvati solo ed esclusivamente in un foglio Google Sheet (`SpeseSmart_Data.sheets`) creato nel suo Google Drive personale.
 - **📱 PWA per iPhone & Desktop:** Installabile su iPhone tramite Safari (*"Aggiungi alla schermata Home"*) a schermo intero senza barre del browser.
 - **⚡ Safe to Spend Giornaliero & Saldo Residuo:** Monitoraggio a colpo d'occhio di quanto puoi spendere oggi per rimanere in budget.
 - **⚡ Quick-Add in 2 Tocchi:** Registrazione istantanea di caffè, pranzo, benzina e spesa in meno di 3 secondi.
