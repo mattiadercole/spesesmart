@@ -1,0 +1,11 @@
+{
+  "name": "spesesmart",
+  "version": "1.0.0",
+  "description": "App di tracciamento spese e investimenti sincronizzata con Google Drive personale",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": ["expense-tracker", "pwa", "google-drive", "google-sheets", "finance"],
+  "author": "",
+  "license": "MIT"
+}
