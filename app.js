@@ -18,6 +18,13 @@ let defaultCategories = {
   ]
 };
 
+let defaultQuickAdds = [
+  { id: 1, label: 'Caffè', amount: 1.50, category: 'Ristoranti & Bar', icon: '☕' },
+  { id: 2, label: 'Pranzo', amount: 12.00, category: 'Ristoranti & Bar', icon: '🍔' },
+  { id: 3, label: 'Spesa', amount: 35.00, category: 'Cibo & Spesa', icon: '🛒' },
+  { id: 4, label: 'Carburante', amount: 30.00, category: 'Trasporti', icon: '⛽' }
+];
+
 let sampleInvestments = [
   { id: 101, name: 'Vanguard FTSE All-World (VWCE)', ticker: 'VWCE', type: 'ETF & Azioni', quantity: 30, buyPrice: 104.50, currentPrice: 126.80, color: '#3b82f6' },
   { id: 102, name: 'iShares Core S&P 500 (CSSPX)', ticker: 'CSSPX', type: 'ETF & Azioni', quantity: 45, buyPrice: 88.00, currentPrice: 112.40, color: '#60a5fa' },
@@ -36,6 +43,7 @@ window.state = {
   txFilterType: 'all',
   privacyMode: false,
   parsedImportItems: [],
+  quickAdds: JSON.parse(JSON.stringify(defaultQuickAdds)),
   categories: JSON.parse(JSON.stringify(defaultCategories)),
   investments: JSON.parse(JSON.stringify(sampleInvestments)),
   transactions: [
@@ -57,6 +65,9 @@ if (saved) {
     if (parsed.transactions) state.transactions = parsed.transactions;
     if (parsed.categories) state.categories = parsed.categories;
     if (parsed.investments) state.investments = parsed.investments;
+    if (parsed.quickAdds && Array.isArray(parsed.quickAdds) && parsed.quickAdds.length > 0) {
+      state.quickAdds = parsed.quickAdds;
+    }
   } catch (e) { console.error(e); }
 }
 
@@ -64,7 +75,8 @@ function persistState() {
   localStorage.setItem('spesesmart_pwa_data', JSON.stringify({
     transactions: state.transactions,
     categories: state.categories,
-    investments: state.investments
+    investments: state.investments,
+    quickAdds: state.quickAdds
   }));
 
   // Background sync to Google Drive if connected
@@ -145,15 +157,91 @@ window.quickAdd = function(amount, category, note) {
 
 window.renderQuickAddButtons = function() {
   const row = document.getElementById('quickAddButtonsRow');
-  const expCats = state.categories.expense.slice(0, 4);
-  const sampleAmounts = [2.50, 12.00, 20.00, 45.00];
-  row.innerHTML = expCats.map((cat, idx) => `
-    <button onclick="quickAdd(${sampleAmounts[idx] || 10}, '${cat.name}', 'Spesa rapida')" class="bg-slate-850 hover:bg-slate-800 border border-slate-800 p-2.5 rounded-2xl text-center transition flex flex-col items-center group">
-      <span class="text-xl mb-0.5">${cat.icon}</span>
-      <span class="text-[11px] font-bold text-white group-hover:text-emerald-400 privacy-blur">${(sampleAmounts[idx] || 10).toFixed(2).replace('.', ',')} €</span>
-      <span class="text-[10px] text-slate-400 truncate w-full">${cat.name.split(' ')[0]}</span>
+  if (!row) return;
+  row.innerHTML = state.quickAdds.map((item, idx) => `
+    <button onclick="quickAdd(${item.amount}, '${item.category.replace(/'/g, "\\'")}', '${item.label.replace(/'/g, "\\'")}')" class="bg-slate-850 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 p-2.5 rounded-2xl text-center transition flex flex-col items-center group relative active:scale-95 shadow-sm">
+      <span class="text-xl mb-0.5">${item.icon || '🏷️'}</span>
+      <span class="text-[11px] font-bold text-white group-hover:text-emerald-400 privacy-blur">${parseFloat(item.amount).toFixed(2).replace('.', ',')} €</span>
+      <span class="text-[10px] text-slate-400 truncate w-full">${item.label}</span>
     </button>
   `).join('');
+};
+
+window.openQuickAddCustomizer = function() {
+  renderQuickAddCustomizerForm();
+  document.getElementById('quickAddModal').classList.remove('hidden');
+};
+
+window.closeQuickAddCustomizer = function() {
+  document.getElementById('quickAddModal').classList.add('hidden');
+};
+
+window.renderQuickAddCustomizerForm = function() {
+  const container = document.getElementById('quickAddCustomizerList');
+  if (!container) return;
+  const expenseCategories = state.categories.expense;
+  
+  container.innerHTML = state.quickAdds.map((item, idx) => `
+    <div class="p-3 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-2.5">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-emerald-400">Tasto Rapido #${idx + 1}</span>
+        <span class="text-[10px] text-slate-500 font-medium">Registrazione in 2 tap</span>
+      </div>
+      <div class="grid grid-cols-12 gap-2">
+        <div class="col-span-3">
+          <label class="text-[10px] text-slate-400 block mb-1">Emoji / Icona</label>
+          <input type="text" id="qa_icon_${idx}" value="${item.icon || '🏷️'}" maxlength="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-center text-lg text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div class="col-span-9">
+          <label class="text-[10px] text-slate-400 block mb-1">Nome / Etichetta</label>
+          <input type="text" id="qa_label_${idx}" value="${item.label}" placeholder="es. Caffè, Pranzo..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-emerald-500">
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-2">
+        <div class="col-span-5">
+          <label class="text-[10px] text-slate-400 block mb-1">Importo Predefinito (€)</label>
+          <input type="number" step="0.10" id="qa_amount_${idx}" value="${item.amount}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-emerald-400 focus:outline-none focus:border-emerald-500">
+        </div>
+        <div class="col-span-7">
+          <label class="text-[10px] text-slate-400 block mb-1">Categoria Associata</label>
+          <select id="qa_cat_${idx}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 truncate">
+            ${expenseCategories.map(cat => `<option value="${cat.name}" ${cat.name === item.category ? 'selected' : ''}>${cat.icon} ${cat.name}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+  `).join('');
+};
+
+window.saveQuickAddCustomizer = function() {
+  const updated = [];
+  for (let idx = 0; idx < state.quickAdds.length; idx++) {
+    const icon = document.getElementById(`qa_icon_${idx}`).value.trim() || '🏷️';
+    const label = document.getElementById(`qa_label_${idx}`).value.trim() || `Tasto ${idx + 1}`;
+    const amountVal = parseFloat(document.getElementById(`qa_amount_${idx}`).value) || 0;
+    const category = document.getElementById(`qa_cat_${idx}`).value;
+    updated.push({
+      id: state.quickAdds[idx].id || (idx + 1),
+      icon,
+      label,
+      amount: Math.max(0.01, amountVal),
+      category
+    });
+  }
+  state.quickAdds = updated;
+  persistState();
+  renderQuickAddButtons();
+  closeQuickAddCustomizer();
+  showToast('⚡ Tasti rapidi aggiornati!');
+};
+
+window.resetQuickAdds = function() {
+  if (!confirm('Ripristinare i 4 tasti rapidi ai valori predefiniti?')) return;
+  state.quickAdds = JSON.parse(JSON.stringify(defaultQuickAdds));
+  persistState();
+  renderQuickAddCustomizerForm();
+  renderQuickAddButtons();
+  showToast('Tasti rapidi ripristinati');
 };
 
 window.openAddModal = function(isRecurringPreset = false) {

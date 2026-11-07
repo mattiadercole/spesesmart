@@ -7,6 +7,8 @@
   
   <!-- PWA & Apple Web App Meta Tags -->
   <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icons/favicon.png">
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -186,7 +188,13 @@
       <!-- Quick Add Buttons in 2 Tap -->
       <div>
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Aggiunta Rapida in 2 Tap</span>
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Aggiunta Rapida in 2 Tap</span>
+            <button onclick="openQuickAddCustomizer()" title="Personalizza importi e categorie dei tasti rapidi" class="p-1 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition flex items-center gap-1 text-[11px]">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span class="text-[10px] text-slate-400 hover:text-emerald-400">Modifica</span>
+            </button>
+          </div>
           <button onclick="openAddModal()" class="text-xs text-emerald-400 hover:underline flex items-center gap-1 font-semibold">
             + Dettagliata
           </button>
@@ -515,6 +523,37 @@
       <div class="flex gap-2">
         <button type="button" onclick="closeAssetModal()" class="flex-1 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs">Annulla</button>
         <button id="assetSubmitBtn" type="button" onclick="saveAssetFromModal()" class="flex-1 py-2.5 rounded-xl bg-emerald-500 text-white font-bold text-xs shadow-lg">Salva</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PERSONALIZZA TASTI RAPIDI IN 2 TAP -->
+  <div id="quickAddModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity">
+    <div class="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-t-3xl sm:rounded-2xl p-5 shadow-2xl max-h-[92vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3 flex-shrink-0">
+        <div>
+          <h3 class="font-bold text-white text-base flex items-center gap-2">
+            <span>⚡</span> Personalizza Tasti Rapidi in 2 Tap
+          </h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">Modifica importi, nomi, emoji e categorie per le tue spese frequenti</p>
+        </div>
+        <button onclick="closeQuickAddCustomizer()" class="p-1 rounded-lg text-slate-400 hover:text-white">✕</button>
+      </div>
+      
+      <div id="quickAddCustomizerList" class="space-y-3 overflow-y-auto flex-1 pr-1 mb-4"></div>
+
+      <div class="flex items-center justify-between gap-2 pt-3 border-t border-slate-800 flex-shrink-0">
+        <button type="button" onclick="resetQuickAdds()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-rose-400 font-semibold text-xs transition">
+          ↺ Reset
+        </button>
+        <div class="flex gap-2">
+          <button type="button" onclick="closeQuickAddCustomizer()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition">
+            Annulla
+          </button>
+          <button type="button" onclick="saveQuickAddCustomizer()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-xs shadow-lg shadow-emerald-500/20 transition">
+            Salva Modifiche
+          </button>
+        </div>
       </div>
     </div>
   </div>

@@ -4,7 +4,11 @@ const ASSETS_TO_CACHE = [
   './index.html',
   './app.js',
   './google-drive.js',
-  './manifest.json'
+  './manifest.json',
+  './icons/apple-touch-icon.png',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/favicon.png'
 ];
 
 self.addEventListener('install', (event) => {
